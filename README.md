@@ -1,36 +1,34 @@
 # 🚀 DevOps Pipeline Lab
 
-An end-to-end DevOps project: a containerized API shipped through a full CI/CD pipeline to Kubernetes on AWS — infrastructure as code, GitOps-ready manifests, and Prometheus/Grafana observability built in.
+An end-to-end DevOps project: a containerized API deployed to Kubernetes on AWS — infrastructure as code, Helm charts, and Prometheus/Grafana observability built in.
 
 ![Python](https://img.shields.io/badge/Python-FastAPI-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)
 ![Terraform](https://img.shields.io/badge/Terraform-7B42BC?logo=terraform&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-EKS-FF9900?logo=amazonaws&logoColor=white)
 ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white)
 
-> Personal portfolio project — built to demonstrate a production-style DevOps workflow from code commit to running cluster.
+> Personal portfolio project — built to demonstrate a production-style DevOps workflow from code to running cluster.
 
 ## What it demonstrates
 
-- **CI/CD** — GitHub Actions: test → build → push image to GHCR → deploy to Kubernetes
+- **Containers** — Docker build, non-root runtime user, health checks
 - **Infrastructure as Code** — Terraform provisions the AWS VPC, subnets, and EKS cluster
-- **Containers** — multi-stage Docker build, non-root runtime user, health checks
 - **Kubernetes** — plain manifests plus a Helm chart for repeatable deploys
 - **Observability** — Prometheus scraping + a Grafana dashboard for the app and nodes
 
-## Pipeline flow
+## Deployment flow
 
 ```
-git push
+Build Docker image
    │
    ▼
-GitHub Actions
-   ├─▶ Test (install deps, import check)
-   ├─▶ Build Docker image → push to GHCR
-   └─▶ Deploy (kubectl apply / Helm upgrade → EKS)
+Push image to GHCR
+   │
+   ▼
+kubectl apply -f k8s/   (or: helm upgrade --install devops-lab helm/devops-lab)
    │
    ▼
 Kubernetes (EKS)
@@ -42,8 +40,8 @@ Kubernetes (EKS)
 
 ```
 ┌──────────────┐     ┌───────────────────────┐     ┌──────────────┐
-│ GitHub repo  │────▶│ GitHub Actions (CI/CD)│────▶│  AWS EKS     │
-│ + GHCR       │     │ build · test · deploy │     │  cluster     │
+│ GitHub repo  │────▶│ Docker image → GHCR   │────▶│  AWS EKS     │
+│              │     │ kubectl / Helm deploy │     │  cluster     │
 └──────────────┘     └───────────────────────┘     └──────┬───────┘
                                                           │
                                     ┌──────────────┐        ▼
@@ -80,7 +78,6 @@ kubectl apply -f ../k8s/                     # or: helm upgrade --install devops
 ```
 devops-lab/
 ├── app/                     # FastAPI demo service (/, /health, /metrics)
-├── .github/workflows/       # CI/CD pipeline (test → build → push → deploy)
 ├── terraform/               # AWS VPC + EKS infrastructure as code
 ├── k8s/                     # Plain Kubernetes manifests
 ├── helm/devops-lab/         # Helm chart for the same deployment
@@ -90,4 +87,4 @@ devops-lab/
 
 ## Tech stack
 
-Python · FastAPI · Docker · Docker Compose · GitHub Actions · GHCR · Terraform · AWS (VPC, EKS) · Kubernetes · Helm · Prometheus · Grafana
+Python · FastAPI · Docker · Docker Compose · Terraform · AWS (VPC, EKS) · Kubernetes · Helm · Prometheus · Grafana
